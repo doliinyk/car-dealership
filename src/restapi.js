@@ -3,15 +3,15 @@ const {
 	port
 } = require("./initialize");
 const dbManager = require("./dbmanager");
-const fs = require("fs");
 const formidable = require("formidable");
 const { ObjectId } = require("mongodb");
+const fs = require("fs");
 
 app.get("/", async (request, response) => {
-	await response.sendFile("index.html");
+	await response.render("index.html");
 });
 
-app.get("/query/cars", async (request, response) => {
+app.get("/cars", async (request, response) => {
 	const query = request.query;
 	let result;
 
@@ -28,13 +28,13 @@ app.get("/query/cars", async (request, response) => {
 	response.send(result);
 });
 
-app.get("/query/makes", async (request, response) => {
+app.get("/cars/makes", async (request, response) => {
 	const result = await dbManager.findDistinct("cars", "make");
 
 	response.send(result);
 });
 
-app.post("/place", (request, response) => {
+app.post("/cars", (request, response) => {
 	const form = new formidable.IncomingForm();
 
 	form.parse(request, async (err, fields, files) => {
@@ -55,7 +55,7 @@ app.post("/place", (request, response) => {
 	response.redirect("sell.html");
 });
 
-app.post("/edit", (request, response) => {
+app.post("/cars-put", (request, response) => {
 	const form = new formidable.IncomingForm();
 
 	form.parse(request, async (err, fields, files) => {
@@ -86,7 +86,7 @@ app.post("/edit", (request, response) => {
 	response.redirect("sell.html");
 });
 
-app.delete("/delete/cars/", async (request, response) => {
+app.delete("/cars", async (request, response) => {
 	const query = request.query;
 
 	await dbManager.remove("cars", ObjectId(query.id));
@@ -94,6 +94,8 @@ app.delete("/delete/cars/", async (request, response) => {
 	fs.rm(`./public/img/cars/${query.image}`, err => {
 		if (err) console.log(err);
 	});
+
+	response.send("Deleted");
 });
 
 app.listen(port, () => console.log(`Server is running on port ${port}`));

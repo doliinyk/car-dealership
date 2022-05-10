@@ -6,7 +6,7 @@ const carsContainer = $("div#carsContainer");
 
 function updateCars() {
 	const req = new XMLHttpRequest();
-	req.open("GET", "/query/cars", true);
+	req.open("GET", "/cars", true);
 	req.send();
 
 	req.onload = () => {
@@ -38,12 +38,12 @@ function updateCars() {
 			 		 </div>
 			 	</div>
 			</div>`)
-				.on("click", `[data-id=${car._id}] button.btn.btn-danger`, e => {
+				.on("click", `[data-id=${car._id}] button.btn.btn-danger`, () => {
 					const confirmModalButton = $("#confirmModal button.btn.btn-danger");
 					confirmModalButton.unbind("click")
 						.bind("click", () => removeCar(car._id, car.image));
 				})
-				.on("click", `[data-id=${car._id}] button.btn.btn-warning`, e => {
+				.on("click", `[data-id=${car._id}] button.btn.btn-warning`, () => {
 					$("input#editModalMake")
 						.val(car.make);
 					$("input#editModalModel")
@@ -80,7 +80,7 @@ function separateNumberSpaces(number) {
 
 function removeCar(id, image) {
 	const req = new XMLHttpRequest();
-	req.open("DELETE", `/delete/cars?id=${id}&image=${image}`, true);
+	req.open("DELETE", `/cars?id=${id}&image=${image}`, true);
 	req.send();
 	updateCars();
 }

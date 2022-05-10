@@ -14,7 +14,7 @@ let calculatedCost = 0;
 
 function updateCars() {
 	const req = new XMLHttpRequest();
-	let url = "query/cars";
+	let url = "cars";
 
 	if (sortObject.sort !== undefined && Object.keys(filterObject).length) {
 		url += `?sort=${sortObject.sort}&order=${sortObject.order}&filter=${JSON.stringify(filterObject)}`;
@@ -66,7 +66,7 @@ function updateCars() {
 
 function updateMakes() {
 	const req = new XMLHttpRequest();
-	req.open("GET", "/query/makes", true);
+	req.open("GET", "/cars/makes", true);
 	req.send();
 
 	req.onload = () => {
@@ -152,7 +152,7 @@ function setNumberFilters(numberFrom, numberTo, filter) {
 			} else {
 				delete filterObject[filter];
 			}
-			numberFrom.val(0);
+			numberFrom.val(numberFrom.attr("min"));
 		}
 
 		updateCars();
@@ -166,7 +166,7 @@ function setNumberFilters(numberFrom, numberTo, filter) {
 			filterObject[filter].$lte = value;
 			if (filterObject[filter].$gte > value) {
 				delete filterObject[filter].$gte;
-				numberFrom.val(0);
+				numberFrom.val(numberFrom.attr("min"));
 			}
 		}
 		if (numberTo.val() === "") {
@@ -192,7 +192,7 @@ function separateNumberSpaces(number) {
 
 function removeCar(id, image) {
 	const req = new XMLHttpRequest();
-	req.open("DELETE", `/delete/cars?id=${id}&image=${image}`, true);
+	req.open("DELETE", `/cars?id=${id}&image=${image}`, true);
 	req.send();
 
 	updateCars();
