@@ -1,0 +1,30 @@
+@mixin transition($x) {
+  transition: $x;
+  -webkit-transition: $x;
+  -moz-transition: $x;
+  -ms-transition: $x;
+  -o-transition: $x;
+}
+
+li.list-group-item {
+  max-height: 40vh;
+  overflow: auto;
+}
+
+h5[data-mdb-toggle="collapse"] {
+  @include transition(color 0.1s ease-out);
+  color: slateblue;
+}
+
+h6 {
+  color: darkslateblue;
+}
+
+h5[data-mdb-toggle="collapse"]:hover {
+  cursor: pointer;
+  color: chocolate;
+}
+
+div.range {
+  color: red;
+}

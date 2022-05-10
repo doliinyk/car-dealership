@@ -1,0 +1,16 @@
+@media (max-width: 768px) {
+  .nav-item, .input-group {
+    margin: 1vh;
+  }
+
+  .bg-image.col-md-6 {
+    border-bottom: 1px rgb(224, 224, 224) solid;
+  }
+}
+
+@media (min-width: 768px) {
+  .bg-image.col-md-6 {
+    border-left: 1px rgb(224, 224, 224) solid;
+    border-right: 1px rgb(224, 224, 224) solid;
+  }
+}

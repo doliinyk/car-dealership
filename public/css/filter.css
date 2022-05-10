@@ -1,0 +1,28 @@
+li.list-group-item {
+  max-height: 40vh;
+  overflow: auto;
+}
+
+h5[data-mdb-toggle=collapse] {
+  transition: color 0.1s ease-out;
+  -webkit-transition: color 0.1s ease-out;
+  -moz-transition: color 0.1s ease-out;
+  -ms-transition: color 0.1s ease-out;
+  -o-transition: color 0.1s ease-out;
+  color: slateblue;
+}
+
+h6 {
+  color: darkslateblue;
+}
+
+h5[data-mdb-toggle=collapse]:hover {
+  cursor: pointer;
+  color: chocolate;
+}
+
+div.range {
+  color: red;
+}
+
+/*# sourceMappingURL=filter.css.map */

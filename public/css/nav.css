@@ -1,0 +1,17 @@
+@media (max-width: 768px) {
+  .nav-item, .input-group {
+    margin: 1vh;
+  }
+
+  .bg-image.col-md-6 {
+    border-bottom: 1px #e0e0e0 solid;
+  }
+}
+@media (min-width: 768px) {
+  .bg-image.col-md-6 {
+    border-left: 1px #e0e0e0 solid;
+    border-right: 1px #e0e0e0 solid;
+  }
+}
+
+/*# sourceMappingURL=nav.css.map */

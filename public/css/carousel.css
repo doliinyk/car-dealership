@@ -1,0 +1,18 @@
+.row.bg-image.text-center, .carousel-item {
+  text-shadow: 1px 1px 1px black;
+}
+
+.carousel-item {
+  height: 35vh;
+  width: 100%;
+  overflow: hidden;
+  text-shadow: 1px 1px 1px black;
+}
+
+.carousel-item img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+/*# sourceMappingURL=carousel.css.map */
