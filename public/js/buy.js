@@ -5,16 +5,19 @@ const makesContainer = $("div#collapseMake");
 const selectOptionSorting = $("select#selectOptionSorting");
 const selectDirectSorting = $("select#selectDirectSorting");
 const calculateCostButton = $("button#calculateCostButton");
+const resetButton = $("button#resetButton");
 
 let optionSorting;
 let directSorting = parseInt(selectDirectSorting.val());
 let sortObject = {};
 let filterObject = {};
 let calculatedCost = 0;
+let searchQuery = location.href.includes("?search=")
+                  ? location.href.substring(location.href.indexOf("?search=") + 8)
+                  : "";
 
 function updateCars() {
-	const req = new XMLHttpRequest();
-	let url = "cars";
+	let url = "/cars";
 
 	if (sortObject.sort !== undefined && Object.keys(filterObject).length) {
 		url += `?sort=${sortObject.sort}&order=${sortObject.order}&filter=${JSON.stringify(filterObject)}`;
@@ -22,21 +25,21 @@ function updateCars() {
 		url += `?sort=${sortObject.sort}&order=${sortObject.order}`;
 	} else if (Object.keys(filterObject).length) {
 		url += `?filter=${JSON.stringify(filterObject)}`;
+	} else if (searchQuery) {
+		url += `?search=${searchQuery}`;
 	}
-	req.open("GET", url, true);
-	req.send();
 
-	req.onload = () => {
-		carsContainer.empty();
-		calculatedCost = 0;
+	fetch(url)
+		.then(response => response.json())
+		.then(cars => {
+			carsContainer.empty();
+			calculatedCost = 0;
 
-		const cars = JSON.parse(req.responseText);
+			cars.forEach(car => {
+				const carName = `${car.make} ${car.model}`;
+				calculatedCost += car.price;
 
-		cars.forEach(car => {
-			const carName = `${car.make} ${car.model}`;
-			calculatedCost += car.price;
-
-			carsContainer.append(`
+				carsContainer.append(`
 			<div class="col-xl-3 col-lg-4 col-md-6 col-12 pb-3" data-id="${car._id}">
 				<div class="card">
 					<img src="img/cars/${car.image}" class="card-img-top"
@@ -55,35 +58,31 @@ function updateCars() {
 			 		 </div>
 			 	</div>
 			</div>`)
-				.on("click", `[data-id=${car._id}] button.btn.btn-success`, () => {
-					const buyModalButton = $("#buyModal button.btn.btn-success");
-					buyModalButton.unbind("click")
-						.bind("click", () => removeCar(car._id, car.image));
-				});
+					.on("click", `[data-id=${car._id}] button.btn.btn-success`, () => {
+						const buyModalButton = $("#buyModal button.btn.btn-success");
+						buyModalButton.unbind("click")
+							.bind("click", () => removeCar(car._id, car.image));
+					});
+			});
 		});
-	}
 }
 
 function updateMakes() {
-	const req = new XMLHttpRequest();
-	req.open("GET", "/cars/makes", true);
-	req.send();
+	fetch("/cars/makes")
+		.then(response => response.json())
+		.then(makes => {
+			makesContainer.empty();
 
-	req.onload = () => {
-		makesContainer.empty();
-
-		const makes = JSON.parse(req.responseText);
-
-		makes.forEach(make => {
-			makesContainer.append(`
+			makes.forEach(make => {
+				makesContainer.append(`
 			<div class="form-check my-2">
 				<input class="form-check-input" type="checkbox" id="checkboxMake${make}" name="${make}">
 				<label class="form-check-label" for="checkboxMake${make}">${make}</label>
 			</div>`);
-		});
+			});
 
-		updateFilters();
-	};
+			updateFilters();
+		});
 }
 
 function updateFilters() {
@@ -187,16 +186,18 @@ function capitalizeFirstLetter(string) {
 }
 
 function separateNumberSpaces(number) {
-	return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+	return number.toString()
+		.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
 function removeCar(id, image) {
-	const req = new XMLHttpRequest();
-	req.open("DELETE", `/cars?id=${id}&image=${image}`, true);
-	req.send();
-
-	updateCars();
-	updateMakes();
+	fetch(`/cars?id=${id}&image=${image}`, {
+		method: "DELETE"
+	})
+		.then(() => {
+			updateCars();
+			updateMakes();
+		});
 }
 
 selectOptionSorting.change(() => {
@@ -222,6 +223,8 @@ selectDirectSorting.change(() => {
 
 calculateCostButton.click(() => $("#calculateModalBody")
 	.text(`Total cost is: $${separateNumberSpaces(calculatedCost)}`));
+
+resetButton.click(() => window.location = window.location.href.split("?")[0]);
 
 updateCars();
 updateMakes();

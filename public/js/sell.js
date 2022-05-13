@@ -5,19 +5,15 @@ const modalImagesImg = $("img.modal-image-img");
 const carsContainer = $("div#carsContainer");
 
 function updateCars() {
-	const req = new XMLHttpRequest();
-	req.open("GET", "/cars", true);
-	req.send();
+	fetch("/cars")
+		.then(response => response.json())
+		.then(cars => {
+			carsContainer.empty();
 
-	req.onload = () => {
-		carsContainer.empty();
+			for (let car of cars) {
+				const carName = `${car.make} ${car.model}`;
 
-		const cars = JSON.parse(req.responseText);
-
-		for (let car of cars) {
-			const carName = `${car.make} ${car.model}`;
-
-			carsContainer.append(`
+				carsContainer.append(`
 			<div class="col-xl-3 col-lg-4 col-md-6 col-12 pb-3" data-id="${car._id}">
 				<div class="card">
 					<img src="img/cars/${car.image}" class="card-img-top"
@@ -38,35 +34,35 @@ function updateCars() {
 			 		 </div>
 			 	</div>
 			</div>`)
-				.on("click", `[data-id=${car._id}] button.btn.btn-danger`, () => {
-					const confirmModalButton = $("#confirmModal button.btn.btn-danger");
-					confirmModalButton.unbind("click")
-						.bind("click", () => removeCar(car._id, car.image));
-				})
-				.on("click", `[data-id=${car._id}] button.btn.btn-warning`, () => {
-					$("input#editModalMake")
-						.val(car.make);
-					$("input#editModalModel")
-						.val(car.model);
-					$("input#editModalColor")
-						.val(car.color);
-					$("select#editModalNewUsed")
-						.val(car.newused);
-					$("select#editModalFuel")
-						.val(car.fuel);
-					$("input#editModalPrice")
-						.val(car.price);
-					$("input#editModalYear")
-						.val(car.year);
-					$("img#editModalImageImg")
-						.attr("src", `img/cars/${car.image}`);
-					$("input#editModalId")
-						.val(car._id);
-					$("input#editModalOldImage")
-						.val(car.image);
-				});
-		}
-	}
+					.on("click", `[data-id=${car._id}] button.btn.btn-danger`, () => {
+						const confirmModalButton = $("#confirmModal button.btn.btn-danger");
+						confirmModalButton.unbind("click")
+							.bind("click", () => removeCar(car._id, car.image));
+					})
+					.on("click", `[data-id=${car._id}] button.btn.btn-warning`, () => {
+						$("input#editModalMake")
+							.val(car.make);
+						$("input#editModalModel")
+							.val(car.model);
+						$("input#editModalColor")
+							.val(car.color);
+						$("select#editModalNewUsed")
+							.val(car.newused);
+						$("select#editModalFuel")
+							.val(car.fuel);
+						$("input#editModalPrice")
+							.val(car.price);
+						$("input#editModalYear")
+							.val(car.year);
+						$("img#editModalImageImg")
+							.attr("src", `img/cars/${car.image}`);
+						$("input#editModalId")
+							.val(car._id);
+						$("input#editModalOldImage")
+							.val(car.image);
+					});
+			}
+		});
 }
 
 function capitalizeFirstLetter(string) {
@@ -75,14 +71,17 @@ function capitalizeFirstLetter(string) {
 }
 
 function separateNumberSpaces(number) {
-	return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+	return number.toString()
+		.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
 function removeCar(id, image) {
-	const req = new XMLHttpRequest();
-	req.open("DELETE", `/cars?id=${id}&image=${image}`, true);
-	req.send();
-	updateCars();
+	fetch(`/cars?id=${id}&image=${image}`, {
+		method: "DELETE"
+	})
+		.then(() => {
+			updateCars();
+		});
 }
 
 for (let i = 0; i < modalImages.length; i++) {

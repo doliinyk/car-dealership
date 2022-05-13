@@ -1,7 +1,7 @@
 const {
 	app,
 	port
-} = require("./initialize");
+} = require("./server");
 const dbManager = require("./dbmanager");
 const formidable = require("formidable");
 const { ObjectId } = require("mongodb");
@@ -9,6 +9,24 @@ const fs = require("fs");
 
 app.get("/", async (request, response) => {
 	await response.render("index.html");
+});
+
+app.get("/buy", async (request, response) => {
+	const query = request.query.search;
+
+	if (query) {
+		response.redirect(`buy.html?search=${query}`);
+	} else {
+		response.redirect("buy.html");
+	}
+});
+
+app.get("/sell", async (request, response) => {
+	response.redirect("sell.html");
+});
+
+app.get("/about", async (request, response) => {
+	response.redirect("about.html");
 });
 
 app.get("/cars", async (request, response) => {
@@ -21,6 +39,20 @@ app.get("/cars", async (request, response) => {
 		result = await dbManager.findSorted("cars", {}, JSON.parse(`{"${query.sort}":${query.order}}`));
 	} else if (query.filter !== undefined) {
 		result = await dbManager.find("cars", JSON.parse(query.filter));
+	} else if (query.search !== undefined) {
+		const regExpQuery = new RegExp(query.search, "i");
+		const numberQuery = parseInt(query.search);
+
+		result = await dbManager.find("cars", {
+			$or: [
+				{ "make": regExpQuery },
+				{ "model": regExpQuery },
+				{ "newused": regExpQuery },
+				{ "fuel": regExpQuery },
+				{ "year": { $eq: numberQuery } },
+				{ "price": { $eq: numberQuery } }
+			]
+		});
 	} else {
 		result = await dbManager.find("cars");
 	}

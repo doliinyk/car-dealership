@@ -2,11 +2,11 @@
   "name": "car-dealership",
   "version": "0.1.0",
   "private": true,
-  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
+  "description": "Car dealership",
   "main": "app.js",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/doliinyk/car-dealership.git"
   },
   "keywords": [
     "car",
@@ -28,8 +28,7 @@
     "serve-favicon": "^2.5.0",
     "web-vitals": "^2.1.4"
   },
-  "devDependencies": {},
   "scripts": {
-    "start": "node src/app.js"
+    "start": "node src"
   }
 }
