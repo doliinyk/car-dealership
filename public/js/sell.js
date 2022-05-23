@@ -10,7 +10,7 @@ function updateCars() {
 		.then(cars => {
 			carsContainer.empty();
 
-			for (let car of cars) {
+			cars.forEach(car => {
 				const carName = `${car.make} ${car.model}`;
 
 				carsContainer.append(`
@@ -23,7 +23,7 @@ function updateCars() {
 						 <p class="card-text">Color: <i
 								 class="fa-solid fa-circle rounded-circle border border-dark"
 								 style="color: ${car.color}"></i></p>
-						 <p class="card-text">Used/New: ${capitalizeFirstLetter(car.newused)}</p>
+						 <p class="card-text">New/Used: ${capitalizeFirstLetter(car.newused)}</p>
 						 <p class="card-text">Fuel: ${capitalizeFirstLetter(car.fuel)}</p>
 						 <p class="card-text">Price: $${separateNumberSpaces(car.price)}</p>
 						 <p class="card-text">Year: ${car.year}</p>
@@ -55,13 +55,14 @@ function updateCars() {
 						$("input#editModalYear")
 							.val(car.year);
 						$("img#editModalImageImg")
-							.attr("src", `img/cars/${car.image}`);
+							.attr("src", `img/cars/${car.image}`)
+							.val(car.image);
 						$("input#editModalId")
 							.val(car._id);
 						$("input#editModalOldImage")
 							.val(car.image);
 					});
-			}
+			});
 		});
 }
 
@@ -88,7 +89,9 @@ for (let i = 0; i < modalImages.length; i++) {
 	const modalImage = $(modalImages[i]);
 	const modalImageImg = $(modalImagesImg[i]);
 
-	modalImage.change(() => modalImageImg.attr("src", URL.createObjectURL(modalImage[0].files[0])));
+	modalImage.change(() => modalImageImg.attr("src", modalImage.val() !== ""
+	                                                  ? URL.createObjectURL(modalImage[0].files[0])
+	                                                  : ""));
 }
 
 updateCars();

@@ -49,7 +49,7 @@ function updateCars() {
 						 <p class="card-text">Color: <i
 								 class="fa-solid fa-circle rounded-circle border border-dark"
 								 style="color: ${car.color}"></i></p>
-						 <p class="card-text">Used/New: ${capitalizeFirstLetter(car.newused)}</p>
+						 <p class="card-text">New/Used: ${capitalizeFirstLetter(car.newused)}</p>
 						 <p class="card-text">Fuel: ${capitalizeFirstLetter(car.fuel)}</p>
 						 <p class="card-text">Price: $${separateNumberSpaces(car.price)}</p>
 						 <p class="card-text">Year: ${car.year}</p>

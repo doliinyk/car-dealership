@@ -2,35 +2,36 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="author" content="Denys Oliinyk https://github.com/doliinyk/">
-	<meta name="description" content="Car dealership - service that providing opportunities to buy or sell car">
+	<meta content="width=device-width, initial-scale=1" name="viewport">
+	<meta content="Denys Oliinyk https://github.com/doliinyk/" name="author">
+	<meta content="Car dealership - service that providing opportunities to buy or sell car" name="description">
 
 	<title>Car Dealership - Sell</title>
 
-	<link rel="icon" href="img/icons/logo512_light.png">
-	<link rel="stylesheet" href="css/nav.css">
-	<link rel="stylesheet" href="css/filter.css">
-	<link rel="stylesheet" href="css/carcards.css">
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/4.0.0/mdb.min.css">
+	<link href="img/icons/favicon.ico" rel="icon">
+	<link href="css/nav.css" rel="stylesheet">
+	<link href="css/filter.css" rel="stylesheet">
+	<link href="css/carcards.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/4.0.0/mdb.min.css" rel="stylesheet">
 </head>
 <body class="bg-dark">
 	<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark py-1 border-primary border-bottom">
 		<div class="container-fluid">
-			<button class="navbar-toggler" type="button" data-mdb-toggle="collapse" data-mdb-target="#navbarToggler"
-			        aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+			<button aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation"
+			        class="navbar-toggler"
+			        data-mdb-target="#navbarToggler" data-mdb-toggle="collapse" type="button">
 				<i class="fas fa-navicon"></i>
 			</button>
 			<a class="navbar-brand" href="index.html">
-				<img class="me-3" src="img/icons/logo512.png" width="32" alt="Logo">
+				<img alt="Logo" class="me-3" src="img/icons/logo512.png" width="32">
 				<span class="d-none d-md-inline">Car dealership</span>
 			</a>
 			<div class="collapse navbar-collapse" id="navbarToggler">
 				<ul class="navbar-nav w-25 me-5">
 					<li class="nav-item">
-						<a class="nav-link" aria-current="page" href="index.html">Home</a>
+						<a aria-current="page" class="nav-link" href="index.html">Home</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" href="buy.html">Buy</a>
@@ -39,11 +40,11 @@
 						<a class="nav-link active" href="#">Sell</a>
 					</li>
 				</ul>
-				<form action="/buy" method="get" class="d-flex container-fluid input-group">
-					<input type="search" class="form-control"
-					       placeholder="Type what you are looking for..."
-					       aria-label="Search" name="search">
-					<input class="btn btn-primary py-0" type="submit" data-mdb-ripple-color="dark" value="Search">
+				<form action="/buy" class="d-flex container-fluid input-group" method="get">
+					<input aria-label="Search" class="form-control"
+					       name="search"
+					       placeholder="Type what you are looking for..." type="search">
+					<input class="btn btn-primary py-0" data-mdb-ripple-color="dark" type="submit" value="Search">
 				</form>
 				<ul class="navbar-nav w-50 justify-content-end">
 					<li class="nav-item">
@@ -55,137 +56,138 @@
 	</nav>
 	<div class="container-fluid bg-light pt-5">
 		<div class="row">
-			<button class="btn btn-primary rounded-0 py-md-2 py-3" type="button" data-mdb-toggle="modal"
-			        data-mdb-target="#placeModal">Place car on dealership
+			<button class="btn btn-primary rounded-0 py-md-2 py-3" data-mdb-target="#placeModal" data-mdb-toggle="modal"
+			        type="button">Place car on dealership
 			</button>
 		</div>
-		<div class="modal fade" id="placeModal" tabindex="-1" aria-labelledby="placeModalLabel"
-		     aria-hidden="true">
+		<div aria-hidden="true" aria-labelledby="placeModalLabel" class="modal fade" id="placeModal"
+		     tabindex="-1">
 			<div class="modal-dialog modal-xl">
 				<div class="modal-content">
 					<div class="modal-header">
 						<h5 class="modal-title" id="placeModalLabel">Place car on dealership</h5>
-						<button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+						<button aria-label="Close" class="btn-close" data-mdb-dismiss="modal" type="button"></button>
 					</div>
 					<div class="modal-body">
-						<form action="/cars" method="post" id="placeModalForm" enctype="multipart/form-data">
+						<form action="/cars" enctype="multipart/form-data" id="placeModalForm" method="post">
 							<div class="form-outline mb-4">
-								<input type="text" id="placeModalMake" class="form-control" name="make" required>
+								<input class="form-control" id="placeModalMake" name="make" required type="text">
 								<label class="form-label" for="placeModalMake">Make</label>
 							</div>
 							<div class="form-outline mb-4">
-								<input type="text" id="placeModalModel" class="form-control" name="model" required>
+								<input class="form-control" id="placeModalModel" name="model" required type="text">
 								<label class="form-label" for="placeModalModel">Model</label>
 							</div>
 							<div class="form-outline mb-4">
-								<input type="color" id="placeModalColor" class="form-control" name="color" required>
+								<input class="form-control" id="placeModalColor" name="color" required type="color">
 								<label class="form-label" for="placeModalColor">Color</label>
 							</div>
-							<select class="form-select mb-4" id="selectModalNewUsed" aria-label="" name="newused"
+							<select aria-label="" class="form-select mb-4" id="selectModalNewUsed" name="newused"
 							        required>
 								<option value="new">New</option>
 								<option value="used">Used</option>
 							</select>
-							<select class="form-select mb-4" id="selectModalFuel" aria-label="" name="fuel" required>
+							<select aria-label="" class="form-select mb-4" id="selectModalFuel" name="fuel" required>
 								<option value="gasoline">Gasoline</option>
 								<option value="diesel">Diesel</option>
 								<option value="electric">Electric</option>
 							</select>
 							<div class="form-outline mb-4">
-								<input type="number" id="placeModalPrice" class="form-control"
-								       name="price" min="0" required>
+								<input class="form-control" id="placeModalPrice" min="0"
+								       name="price" required type="number">
 								<label class="form-label" for="placeModalPrice">Price</label>
 							</div>
 							<div class="form-outline mb-4">
-								<input type="number" id="placeModalYear" class="form-control"
-								       name="year" min="1970" max="2022" value="1970" required>
+								<input class="form-control" id="placeModalYear" max="2022"
+								       min="1950" name="year" required type="number" value="1950">
 								<label class="form-label" for="placeModalYear">Year</label>
 							</div>
 							<div class="mb-4">
 								<label class="form-label mx-1" for="placeModalImage">Car image</label>
-								<input type="file" class="form-control modal-image" id="placeModalImage" name="image"
-								       style="text-align-last: center" required>
+								<input class="form-control modal-image" id="placeModalImage" name="image" required
+								       style="text-align-last: center" type="file">
 							</div>
-							<img id="placeModalImageImg" class="img-fluid rounded-5 w-100 mb-4 modal-image-img" src=""
-							     alt="">
-							<input type="submit" class="btn btn-primary btn-block mb-2" value="Place car" required>
+							<img alt="" class="img-fluid rounded-5 w-100 mb-4 modal-image-img" id="placeModalImageImg"
+							     src="">
+							<input class="btn btn-primary btn-block mb-2" required type="submit" value="Place car">
 						</form>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel"
-		     aria-hidden="true">
+		<div aria-hidden="true" aria-labelledby="editModalLabel" class="modal fade" id="editModal"
+		     tabindex="-1">
 			<div class="modal-dialog modal-xl">
 				<div class="modal-content">
 					<div class="modal-header">
 						<h5 class="modal-title" id="editModalLabel">Edit car</h5>
-						<button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+						<button aria-label="Close" class="btn-close" data-mdb-dismiss="modal" type="button"></button>
 					</div>
 					<div class="modal-body">
-						<form action="/cars-put" method="post" id="editModalForm" enctype="multipart/form-data">
+						<form action="/cars-put" enctype="multipart/form-data" id="editModalForm" method="post">
 							<div class="form-outline mb-4">
-								<input type="text" id="editModalMake" class="form-control" name="make" required>
+								<input class="form-control" id="editModalMake" name="make" required type="text">
 								<label class="form-label" for="editModalMake">Make</label>
 							</div>
 							<div class="form-outline mb-4">
-								<input type="text" id="editModalModel" class="form-control" name="model" required>
+								<input class="form-control" id="editModalModel" name="model" required type="text">
 								<label class="form-label" for="editModalModel">Model</label>
 							</div>
 							<div class="form-outline mb-4">
-								<input type="color" id="editModalColor" class="form-control" name="color" required>
+								<input class="form-control" id="editModalColor" name="color" required type="color">
 								<label class="form-label" for="editModalColor">Color</label>
 							</div>
-							<select class="form-select mb-4" id="editModalNewUsed" aria-label="" name="newused"
+							<select aria-label="" class="form-select mb-4" id="editModalNewUsed" name="newused"
 							        required>
 								<option value="new">New</option>
 								<option value="used">Used</option>
 							</select>
-							<select class="form-select mb-4" id="editModalFuel" aria-label="" name="fuel" required>
+							<select aria-label="" class="form-select mb-4" id="editModalFuel" name="fuel" required>
 								<option value="gasoline">Gasoline</option>
 								<option value="diesel">Diesel</option>
 								<option value="electric">Electric</option>
 							</select>
 							<div class="form-outline mb-4">
-								<input type="number" id="editModalPrice" class="form-control" name="price" required>
+								<input class="form-control" id="editModalPrice" name="price" required type="number">
 								<label class="form-label" for="editModalPrice">Price</label>
 							</div>
 							<div class="form-outline mb-4">
-								<input type="number" id="editModalYear" class="form-control" name="year" required>
+								<input class="form-control" id="editModalYear" name="year" required type="number">
 								<label class="form-label" for="editModalYear">Year</label>
 							</div>
 							<div class="mb-4">
 								<label class="form-label mx-1" for="editModalImage">Car image</label>
-								<input type="file" class="form-control modal-image" id="editModalImage" name="image"
-								       style="text-align-last: center">
+								<input class="form-control modal-image" id="editModalImage" name="image"
+								       style="text-align-last: center"
+								       type="file">
 							</div>
-							<img id="editModalImageImg" class="img-fluid rounded-5 w-100 mb-4 modal-image-img" src=""
-							     alt="">
-							<input type="hidden" id="editModalId" value="" name="_id" required>
-							<input type="hidden" id="editModalOldImage" value="" name="oldimage" required>
-							<input type="submit" class="btn btn-primary btn-block mb-2" value="Edit car" required>
+							<img alt="" class="img-fluid rounded-5 w-100 mb-4 modal-image-img" id="editModalImageImg"
+							     src="">
+							<input id="editModalId" name="_id" required type="hidden" value="">
+							<input id="editModalOldImage" name="oldimage" required type="hidden" value="">
+							<input class="btn btn-primary btn-block mb-2" required type="submit" value="Edit car">
 						</form>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="modal fade top" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel"
-		     aria-hidden="true">
+		<div aria-hidden="true" aria-labelledby="confirmModalLabel" class="modal fade top" id="confirmModal"
+		     tabindex="-1">
 			<div class="modal-dialog modal-sm modal-dialog-centered">
 				<div class="modal-content">
 					<div class="modal-header">
 						<h5 class="modal-title" id="confirmModalLabel">Confirmation</h5>
-						<button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+						<button aria-label="Close" class="btn-close" data-mdb-dismiss="modal" type="button"></button>
 					</div>
 					<div class="modal-body">Are you sure want to remove car?</div>
 					<div class="modal-footer justify-content-center">
-						<button type="button" class="btn btn-success" data-mdb-dismiss="modal">Keep</button>
-						<button type="button" class="btn btn-danger" data-mdb-dismiss="modal">Remove</button>
+						<button class="btn btn-success" data-mdb-dismiss="modal" type="button">Keep</button>
+						<button class="btn btn-danger" data-mdb-dismiss="modal" type="button">Remove</button>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div id="carsContainer" class="row pt-md-3 bg-opacity-25 bg-dark"></div>
+		<div class="row pt-md-3 bg-opacity-25 bg-dark" id="carsContainer"></div>
 	</div>
 	<footer class="bg-dark text-center text-white border-top">
 		<div class="container p-4">
@@ -199,12 +201,12 @@
 						</div>
 						<div class="col-md-5 col-12">
 							<div class="form-outline form-white mb-4">
-								<input type="email" id="form5Example21" class="form-control">
+								<input class="form-control" id="form5Example21" type="email">
 								<label class="form-label" for="form5Example21">Email address</label>
 							</div>
 						</div>
 						<div class="col-auto">
-							<button type="submit" class="btn btn-outline-light mb-4">
+							<button class="btn btn-outline-light mb-4" type="submit">
 								Subscribe
 							</button>
 						</div>
@@ -224,15 +226,16 @@
 		</div>
 	</footer>
 
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+	<script crossorigin="anonymous"
 	        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
-	        crossorigin="anonymous">
+	        src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js">
 	</script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/4.0.0/mdb.min.js"
 	        type="text/javascript">
 	</script>
-	<script src="https://code.jquery.com/jquery-3.6.0.js"
-	        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
-	<script type="module" src="js/sell.js"></script>
+	<script crossorigin="anonymous"
+	        integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk="
+	        src="https://code.jquery.com/jquery-3.6.0.js"></script>
+	<script src="js/sell.js" type="module"></script>
 </body>
 </html>
