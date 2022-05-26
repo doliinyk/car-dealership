@@ -1,8 +1,8 @@
 const {
 	app,
 	port
-} = require("./server");
-const dbManager = require("./dbmanager");
+} = require("./app");
+const dbManager = require("./db");
 const formidable = require("formidable");
 const { ObjectId } = require("mongodb");
 const fs = require("fs");
@@ -79,9 +79,9 @@ app.post("/cars", (request, response) => {
 		const oldPath = files.image.filepath;
 		const newPath = `./public/img/cars/${fields.image}`;
 
-		fs.copyFile(oldPath, newPath, err => {
-			if (err) console.log(err);
-		});
+		// fs.copyFile(oldPath, newPath, err => {
+		// 	if (err) console.log(err);
+		// });
 	});
 
 	response.redirect("sell.html");
@@ -101,12 +101,12 @@ app.post("/cars-put", (request, response) => {
 			const oldPath = files.image.filepath;
 			const newPath = `./public/img/cars/${fields.image}`;
 
-			fs.rm(`./public/img/cars/${fields.oldimage}`, err => {
-				if (err) console.log(err);
-			});
-			fs.copyFile(oldPath, newPath, err => {
-				if (err) console.log(err);
-			});
+			// fs.rm(`./public/img/cars/${fields.oldimage}`, err => {
+			// 	if (err) console.log(err);
+			// });
+			// fs.copyFile(oldPath, newPath, err => {
+			// 	if (err) console.log(err);
+			// });
 		}
 
 		delete fields.oldimage;
@@ -123,9 +123,9 @@ app.delete("/cars", async (request, response) => {
 
 	await dbManager.remove("cars", ObjectId(query.id));
 
-	fs.rm(`./public/img/cars/${query.image}`, err => {
-		if (err) console.log(err);
-	});
+	// fs.rm(`./public/img/cars/${query.image}`, err => {
+	// 	if (err) console.log(err);
+	// });
 
 	response.send("Deleted");
 });

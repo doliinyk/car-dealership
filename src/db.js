@@ -15,7 +15,7 @@ const db = client.db("db");
 async function insert(collection, data) {
 	const _collection = db.collection(collection);
 
-	await _collection.insertOne(data, (err, result) => {
+	await _collection.insertOne(data, err => {
 		if (err) console.log(err);
 	});
 }
@@ -49,7 +49,7 @@ async function findSorted(collection, query, sort) {
 async function edit(collection, _id, data) {
 	const _collection = await db.collection(collection);
 
-	await _collection.updateOne({ _id }, { $set: data }, (err, result) => {
+	await _collection.updateOne({ _id }, { $set: data }, err => {
 		if (err) console.log(err);
 	});
 }
@@ -57,7 +57,7 @@ async function edit(collection, _id, data) {
 async function remove(collection, _id) {
 	const _collection = await db.collection(collection);
 
-	await _collection.deleteOne({ _id }, (err, result) => {
+	await _collection.deleteOne({ _id }, err => {
 		if (err) console.log(err);
 	});
 }
