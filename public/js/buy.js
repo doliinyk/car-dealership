@@ -73,13 +73,12 @@ function updateMakes() {
 		.then(makes => {
 			makesContainer.empty();
 
-			makes.forEach(make => {
-				makesContainer.append(`
+			makes.forEach(make => makesContainer.append(`
 			<div class="form-check my-2">
 				<input class="form-check-input" type="checkbox" id="checkboxMake${make}" name="${make}">
 				<label class="form-check-label" for="checkboxMake${make}">${make}</label>
-			</div>`);
-			});
+			</div>`)
+			);
 
 			updateFilters();
 		});
@@ -98,10 +97,8 @@ function updateFilters() {
 	setCheckboxFilter(checkboxGasoline, "fuel", "gasoline");
 	setCheckboxFilter(checkboxDiesel, "fuel", "diesel");
 	setCheckboxFilter(checkboxElectric, "fuel", "electric");
-	checkboxMakes.each((index, checkbox) => {
-		setCheckboxFilter($(checkbox), "make", $(checkbox)
-			.attr("name"));
-	});
+	checkboxMakes.each((index, checkbox) => setCheckboxFilter($(checkbox), "make", $(checkbox)
+		.attr("name")));
 
 	const numberPriceFrom = $("#numberPriceFrom");
 	const numberPriceTo = $("#numberPriceTo");

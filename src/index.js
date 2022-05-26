@@ -2,7 +2,7 @@ const {
 	app,
 	port
 } = require("./app");
-const dbManager = require("./db");
+const db = require("./db");
 const formidable = require("formidable");
 const { ObjectId } = require("mongodb");
 const fs = require("fs");
@@ -14,11 +14,9 @@ app.get("/", async (request, response) => {
 app.get("/buy", async (request, response) => {
 	const query = request.query.search;
 
-	if (query) {
-		response.redirect(`buy.html?search=${query}`);
-	} else {
-		response.redirect("buy.html");
-	}
+	response.redirect(query
+	                  ? `buy.html?search=${query}`
+	                  : "buy.html");
 });
 
 app.get("/sell", async (request, response) => {
@@ -34,34 +32,27 @@ app.get("/cars", async (request, response) => {
 	let result;
 
 	if (query.sort !== undefined && query.filter !== undefined) {
-		result = await dbManager.findSorted("cars", JSON.parse(query.filter), JSON.parse(`{"${query.sort}":${query.order}}`));
+		result = await db.findSorted("cars", JSON.parse(query.filter), JSON.parse(`{"${query.sort}":${query.order}}`));
 	} else if (query.sort !== undefined) {
-		result = await dbManager.findSorted("cars", {}, JSON.parse(`{"${query.sort}":${query.order}}`));
+		result = await db.findSorted("cars", {}, JSON.parse(`{"${query.sort}":${query.order}}`));
 	} else if (query.filter !== undefined) {
-		result = await dbManager.find("cars", JSON.parse(query.filter));
+		result = await db.find("cars", JSON.parse(query.filter));
 	} else if (query.search !== undefined) {
 		const regExpQuery = new RegExp(query.search, "i");
 		const numberQuery = parseInt(query.search);
 
-		result = await dbManager.find("cars", {
-			$or: [
-				{ "make": regExpQuery },
-				{ "model": regExpQuery },
-				{ "newused": regExpQuery },
-				{ "fuel": regExpQuery },
-				{ "year": { $eq: numberQuery } },
-				{ "price": { $eq: numberQuery } }
-			]
+		result = await db.find("cars", {
+			$or: [{ "make": regExpQuery }, { "model": regExpQuery }, { "newused": regExpQuery }, { "fuel": regExpQuery }, { "year": { $eq: numberQuery } }, { "price": { $eq: numberQuery } }]
 		});
 	} else {
-		result = await dbManager.find("cars");
+		result = await db.find("cars");
 	}
 
 	response.send(result);
 });
 
 app.get("/cars/makes", async (request, response) => {
-	const result = await dbManager.findDistinct("cars", "make");
+	const result = await db.findDistinct("cars", "make");
 
 	response.send(result);
 });
@@ -74,17 +65,17 @@ app.post("/cars", (request, response) => {
 		fields.price = parseInt(fields.price.toString());
 		fields.year = parseInt(fields.year.toString());
 
-		await dbManager.insert("cars", fields);
+		await db.insert("cars", fields);
 
 		const oldPath = files.image.filepath;
 		const newPath = `./public/img/cars/${fields.image}`;
 
-		// fs.copyFile(oldPath, newPath, err => {
-		// 	if (err) console.log(err);
-		// });
-	});
+		fs.copyFile(oldPath, newPath, err => {
+			if (err) console.log(err);
+		});
 
-	response.redirect("sell.html");
+		response.redirect("sell.html");
+	});
 });
 
 app.post("/cars-put", (request, response) => {
@@ -101,35 +92,35 @@ app.post("/cars-put", (request, response) => {
 			const oldPath = files.image.filepath;
 			const newPath = `./public/img/cars/${fields.image}`;
 
-			// fs.rm(`./public/img/cars/${fields.oldimage}`, err => {
-			// 	if (err) console.log(err);
-			// });
-			// fs.copyFile(oldPath, newPath, err => {
-			// 	if (err) console.log(err);
-			// });
+			fs.rm(`./public/img/cars/${fields.oldimage}`, err => {
+				if (err) console.log(err);
+			});
+			fs.copyFile(oldPath, newPath, err => {
+				if (err) console.log(err);
+			});
 		}
 
 		delete fields.oldimage;
 		delete fields._id;
 
-		await dbManager.edit("cars", ObjectId(id), fields);
-	});
+		await db.update("cars", ObjectId(id), fields);
 
-	response.redirect("sell.html");
+		response.redirect("sell.html");
+	});
 });
 
 app.delete("/cars", async (request, response) => {
 	const query = request.query;
 
-	await dbManager.remove("cars", ObjectId(query.id));
+	await db.remove("cars", ObjectId(query.id));
 
-	// fs.rm(`./public/img/cars/${query.image}`, err => {
-	// 	if (err) console.log(err);
-	// });
+	fs.rm(`./public/img/cars/${query.image}`, err => {
+		if (err) console.log(err);
+	});
 
 	response.send("Deleted");
 });
 
 app.listen(port, () => console.log(`Server is running on port ${port}`));
 
-(async () => await dbManager.close())();
+(async () => await db.close())();

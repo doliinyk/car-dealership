@@ -46,7 +46,7 @@ async function findSorted(collection, query, sort) {
 		.toArray();
 }
 
-async function edit(collection, _id, data) {
+async function update(collection, _id, data) {
 	const _collection = await db.collection(collection);
 
 	await _collection.updateOne({ _id }, { $set: data }, err => {
@@ -67,12 +67,11 @@ async function close() {
 }
 
 module.exports = {
-	client,
 	insert,
 	find,
 	findDistinct,
 	findSorted,
-	edit,
+	update,
 	remove,
 	close
 };

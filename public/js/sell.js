@@ -80,9 +80,7 @@ function removeCar(id, image) {
 	fetch(`/cars?id=${id}&image=${image}`, {
 		method: "DELETE"
 	})
-		.then(() => {
-			updateCars();
-		});
+		.then(() => updateCars());
 }
 
 for (let i = 0; i < modalImages.length; i++) {
