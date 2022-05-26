@@ -1,8 +1,8 @@
 const {
 	app,
 	port
-} = require("./server");
-const dbManager = require("./dbmanager");
+} = require("./app");
+const dbManager = require("./db");
 const formidable = require("formidable");
 const { ObjectId } = require("mongodb");
 const fs = require("fs");
