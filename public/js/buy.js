@@ -2,44 +2,56 @@
 
 const carsContainer = $("div#carsContainer");
 const makesContainer = $("div#collapseMake");
+const searchInput = $("#navbarToggler>form>input[type=search]");
+
 const selectOptionSorting = $("select#selectOptionSorting");
 const selectDirectSorting = $("select#selectDirectSorting");
+
+const checkboxNew = $("#checkboxNew");
+const checkboxUsed = $("#checkboxUsed");
+const checkboxGasoline = $("#checkboxGasoline");
+const checkboxDiesel = $("#checkboxDiesel");
+const checkboxElectric = $("#checkboxElectric");
+let checkboxMakes;
+
+const numberPriceFrom = $("#numberPriceFrom");
+const numberPriceTo = $("#numberPriceTo");
+const numberYearFrom = $("#numberYearFrom");
+const numberYearTo = $("#numberYearTo");
+
 const calculateCostButton = $("button#calculateCostButton");
 const resetButton = $("button#resetButton");
 
-let optionSorting;
-let directSorting = parseInt(selectDirectSorting.val());
 let sortObject = {};
+let rangeObject = {};
 let filterObject = {};
 let calculatedCost = 0;
 let searchQuery = location.href.includes("?search=")
                   ? location.href.substring(location.href.indexOf("?search=") + 8)
                   : "";
 
+let carsPromise;
+
+function fetchCars() {
+	carsPromise = fetch("/cars")
+		.then(response => response.json());
+}
+
 function updateCars() {
-	let url = "/cars";
+	carsPromise.then(cars => {
+		carsContainer.empty();
+		calculatedCost = 0;
 
-	if (sortObject.sort !== undefined && Object.keys(filterObject).length) {
-		url += `?sort=${sortObject.sort}&order=${sortObject.order}&filter=${JSON.stringify(filterObject)}`;
-	} else if (sortObject.sort !== undefined) {
-		url += `?sort=${sortObject.sort}&order=${sortObject.order}`;
-	} else if (Object.keys(filterObject).length) {
-		url += `?filter=${JSON.stringify(filterObject)}`;
-	} else if (searchQuery) {
-		url += `?search=${searchQuery}`;
-	}
+		cars = searchCars(cars);
+		cars = sortCars(cars);
+		cars = rangeCars(cars);
+		cars = filterCars(cars);
 
-	fetch(url)
-		.then(response => response.json())
-		.then(cars => {
-			carsContainer.empty();
-			calculatedCost = 0;
+		cars.forEach(car => {
+			const carName = `${car.make} ${car.model}`;
+			calculatedCost += car.price;
 
-			cars.forEach(car => {
-				const carName = `${car.make} ${car.model}`;
-				calculatedCost += car.price;
-
-				carsContainer.append(`
+			carsContainer.append(`
 			<div class="col-xl-3 col-lg-4 col-md-6 col-12 pb-3" data-id="${car._id}">
 				<div class="card">
 					<img src="img/cars/${car.image}" class="card-img-top"
@@ -58,70 +70,180 @@ function updateCars() {
 			 		 </div>
 			 	</div>
 			</div>`)
-					.on("click", `[data-id=${car._id}] button.btn.btn-success`, () => {
-						const buyModalButton = $("#buyModal button.btn.btn-success");
-						buyModalButton.unbind("click")
-							.bind("click", () => removeCar(car._id, car.image));
-					});
-			});
+				.on("click", `[data-id=${car._id}] button.btn.btn-success`, () => {
+					const buyModalButton = $("#buyModal button.btn.btn-success");
+					buyModalButton.unbind("click")
+						.bind("click", () => removeCar(car._id, car.image));
+				});
 		});
+	});
 }
 
 function updateMakes() {
-	fetch("/cars/makes")
-		.then(response => response.json())
-		.then(makes => {
+	carsPromise
+		.then(cars => {
 			makesContainer.empty();
 
-			makes.forEach(make => makesContainer.append(`
-			<div class="form-check my-2">
+			let carsSet = new Set(cars.map(car => car.make));
+			carsSet.forEach(make => makesContainer.append(`
+			<div class="form-check my-2 checkbox-makes">
 				<input class="form-check-input" type="checkbox" id="checkboxMake${make}" name="${make}">
 				<label class="form-check-label" for="checkboxMake${make}">${make}</label>
-			</div>`)
-			);
+			</div>`));
 
 			updateFilters();
 		});
 }
 
-function updateFilters() {
-	const checkboxNew = $("#checkboxNew");
-	const checkboxUsed = $("#checkboxUsed");
-	const checkboxGasoline = $("#checkboxGasoline");
-	const checkboxDiesel = $("#checkboxDiesel");
-	const checkboxElectric = $("#checkboxElectric");
-	const checkboxMakes = $("[id^=checkboxMake]");
-
-	setCheckboxFilter(checkboxNew, "newused", "new");
-	setCheckboxFilter(checkboxUsed, "newused", "used");
-	setCheckboxFilter(checkboxGasoline, "fuel", "gasoline");
-	setCheckboxFilter(checkboxDiesel, "fuel", "diesel");
-	setCheckboxFilter(checkboxElectric, "fuel", "electric");
-	checkboxMakes.each((index, checkbox) => setCheckboxFilter($(checkbox), "make", $(checkbox)
-		.attr("name")));
-
-	const numberPriceFrom = $("#numberPriceFrom");
-	const numberPriceTo = $("#numberPriceTo");
-	const numberYearFrom = $("#numberYearFrom");
-	const numberYearTo = $("#numberYearTo");
-
-	setNumberFilters(numberPriceFrom, numberPriceTo, "price");
-	setNumberFilters(numberYearFrom, numberYearTo, "year");
+function removeCar(id, image) {
+	fetch(`/cars?id=${id}&image=${image}`, {
+		method: "DELETE"
+	})
+		.then(() => {
+			fetchCars();
+			updateMakes();
+			updateCars();
+		});
 }
 
-function setCheckboxFilter(checkbox, filter, value) {
+function searchCars(cars) {
+	const makesContainers = $("div.checkbox-makes");
+	makesContainers.show();
+
+	if (searchQuery) {
+		cars = cars.filter(car => {
+			for (const carKey in car) {
+				if (car[carKey].toString()
+					.toLowerCase()
+					.includes(searchQuery.toLowerCase())) {
+					return true;
+				}
+			}
+			return false;
+		});
+
+		const makes = cars.map(car => car.make);
+		makesContainers.each((index, container) => {
+			const checkbox = $(container)
+				.find("input.form-check-input");
+			if (!makes.includes(checkbox.attr("name"))) {
+				$(container)
+					.hide();
+			}
+		});
+	}
+
+	return cars;
+}
+
+function sortCars(cars) {
+	setSortingOptions();
+
+	if (sortObject.sort !== undefined) {
+		cars = cars.sort((a, b) => {
+			if (a[sortObject.sort] > b[sortObject.sort]) {
+				return 1;
+			} else if (a[sortObject.sort] < b[sortObject.sort]) {
+				return -1;
+			}
+			return 0;
+		});
+		if (sortObject.order < 0) {
+			cars.reverse();
+		}
+	}
+
+	return cars;
+}
+
+function rangeCars(cars) {
+	if (Object.keys(rangeObject).length) {
+		cars = cars.filter(car => {
+			for (const rangeKey in rangeObject) {
+				if (rangeObject[rangeKey].from !== undefined &&
+					rangeObject[rangeKey].to !== undefined) {
+					if (car[rangeKey] <= rangeObject[rangeKey].from ||
+						car[rangeKey] >= rangeObject[rangeKey].to) {
+						return false;
+					}
+				} else if (rangeObject[rangeKey].from !== undefined) {
+					if (car[rangeKey] <= rangeObject[rangeKey].from) {
+						return false;
+					}
+				} else if (rangeObject[rangeKey].to !== undefined) {
+					if (car[rangeKey] >= rangeObject[rangeKey].to) {
+						return false;
+					}
+				}
+			}
+			return true;
+		});
+	}
+
+	return cars;
+}
+
+function filterCars(cars) {
+	if (Object.keys(filterObject).length) {
+		cars = cars.filter(car => {
+			for (const filterKey in filterObject) {
+				if (filterObject[filterKey] !== undefined && filterObject[filterKey].length) {
+					if (!filterObject[filterKey].includes(car[filterKey])) {
+						return false;
+					}
+				}
+			}
+			return true;
+		});
+	}
+
+	return cars;
+}
+
+function setSortingOptionsAndUpdateCars() {
+	setSortingOptions();
+
+	updateCars();
+}
+
+function setSortingOptions() {
+	const optionSorting = selectOptionSorting.val();
+	const directSorting = parseInt(selectDirectSorting.val());
+
+	sortObject.sort = optionSorting !== "Sort option..."
+	                  ? optionSorting
+	                  : undefined;
+	sortObject.order = directSorting;
+}
+
+function updateFilters() {
+	checkboxMakes = $("[id^=checkboxMake]");
+
+	setCheckboxes(checkboxNew, "newused", "new");
+	setCheckboxes(checkboxUsed, "newused", "used");
+	setCheckboxes(checkboxGasoline, "fuel", "gasoline");
+	setCheckboxes(checkboxDiesel, "fuel", "diesel");
+	setCheckboxes(checkboxElectric, "fuel", "electric");
+	checkboxMakes.each((index, checkbox) => setCheckboxes($(checkbox), "make", $(checkbox)
+		.attr("name")));
+
+	setRanges(numberPriceFrom, numberPriceTo, "price");
+	setRanges(numberYearFrom, numberYearTo, "year");
+}
+
+function setCheckboxes(checkbox, filter, value) {
 	checkbox.change(() => {
 		if (checkbox.is(":checked")) {
 			if (filterObject[filter] === undefined) {
-				filterObject[filter] = { $in: [value] };
+				filterObject[filter] = [value];
 			} else {
-				filterObject[filter].$in.push(value);
+				filterObject[filter].push(value);
 			}
 		} else {
-			if (filterObject[filter].$in.length === 1) {
+			if (filterObject[filter].length === 1) {
 				delete filterObject[filter];
 			} else {
-				filterObject[filter].$in.splice(filterObject[filter].$in.indexOf(value), 1);
+				filterObject[filter].splice(filterObject[filter].indexOf(value), 1);
 			}
 		}
 
@@ -129,47 +251,47 @@ function setCheckboxFilter(checkbox, filter, value) {
 	});
 }
 
-function setNumberFilters(numberFrom, numberTo, filter) {
-	numberFrom.change(() => {
-		const value = parseInt(numberFrom.val());
+function setRanges(rangeFrom, rangeTo, filter) {
+	rangeFrom.change(() => {
+		const value = parseInt(rangeFrom.val());
 
-		if (filterObject[filter] === undefined) {
-			filterObject[filter] = { $gte: value };
+		if (rangeObject[filter] === undefined) {
+			rangeObject[filter] = { from: value };
 		} else {
-			filterObject[filter].$gte = value;
-			if (filterObject[filter].$lte < value) {
-				delete filterObject[filter].$lte;
-				numberTo.val("");
+			rangeObject[filter].from = value;
+			if (rangeObject[filter].to < value) {
+				delete rangeObject[filter].to;
+				rangeTo.val("");
 			}
 		}
-		if (numberFrom.val() === "") {
-			if (filterObject[filter].$lte !== undefined) {
-				delete filterObject[filter].$gte;
+		if (rangeFrom.val() === "") {
+			if (rangeObject[filter].to !== undefined) {
+				delete rangeObject[filter].from;
 			} else {
-				delete filterObject[filter];
+				delete rangeObject[filter];
 			}
-			numberFrom.val(numberFrom.attr("min"));
+			rangeFrom.val(rangeFrom.attr("min"));
 		}
 
 		updateCars();
 	});
-	numberTo.change(() => {
-		const value = parseInt(numberTo.val());
+	rangeTo.change(() => {
+		const value = parseInt(rangeTo.val());
 
-		if (filterObject[filter] === undefined) {
-			filterObject[filter] = { $lte: value };
+		if (rangeObject[filter] === undefined) {
+			rangeObject[filter] = { to: value };
 		} else {
-			filterObject[filter].$lte = value;
-			if (filterObject[filter].$gte > value) {
-				delete filterObject[filter].$gte;
-				numberFrom.val(numberFrom.attr("min"));
+			rangeObject[filter].to = value;
+			if (rangeObject[filter].from > value) {
+				delete rangeObject[filter].from;
+				rangeFrom.val(rangeFrom.attr("min"));
 			}
 		}
-		if (numberTo.val() === "") {
-			if (filterObject[filter].$gte !== undefined) {
-				delete filterObject[filter].$lte;
+		if (rangeTo.val() === "") {
+			if (rangeObject[filter].from !== undefined) {
+				delete rangeObject[filter].to;
 			} else {
-				delete filterObject[filter];
+				delete rangeObject[filter];
 			}
 		}
 
@@ -187,41 +309,50 @@ function separateNumberSpaces(number) {
 		.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
-function removeCar(id, image) {
-	fetch(`/cars?id=${id}&image=${image}`, {
-		method: "DELETE"
-	})
-		.then(() => {
-			updateCars();
-			updateMakes();
-		});
+if (searchQuery) {
+	searchInput.val(searchQuery);
 }
 
-selectOptionSorting.change(() => {
-	optionSorting = selectOptionSorting.val();
-
-	if (optionSorting === "Sort option...") {
-		optionSorting = undefined;
-	}
-	sortObject.sort = optionSorting;
-	sortObject.order = directSorting;
+searchInput.on("input", () => {
+	searchQuery = searchInput.val();
 
 	updateCars();
 });
 
-selectDirectSorting.change(() => {
-	directSorting = parseInt(selectDirectSorting.val());
-
-	sortObject.sort = optionSorting;
-	sortObject.order = directSorting;
-
-	updateCars();
-});
+selectOptionSorting.change(setSortingOptionsAndUpdateCars);
+selectDirectSorting.change(setSortingOptionsAndUpdateCars);
 
 calculateCostButton.click(() => $("#calculateModalBody")
 	.text(`Total cost is: $${separateNumberSpaces(calculatedCost)}`));
 
-resetButton.click(() => window.location = window.location.href.split("?")[0]);
+resetButton.click(() => {
+	searchInput.val("");
 
-updateCars();
+	selectOptionSorting.val("nosort");
+	selectDirectSorting.val(1);
+
+	checkboxNew.prop("checked", false);
+	checkboxUsed.prop("checked", false);
+	checkboxGasoline.prop("checked", false);
+	checkboxDiesel.prop("checked", false);
+	checkboxElectric.prop("checked", false);
+	checkboxMakes.each((index, checkbox) => $(checkbox)
+		.prop("checked", false));
+
+	numberPriceFrom.val(numberPriceFrom.attr("min"));
+	numberPriceTo.val("");
+	numberYearFrom.val(numberYearFrom.attr("min"));
+	numberYearTo.val("");
+
+	sortObject = {};
+	rangeObject = {};
+	filterObject = {};
+	searchQuery = "";
+
+	updateMakes();
+	updateCars();
+});
+
+fetchCars();
 updateMakes();
+updateCars();

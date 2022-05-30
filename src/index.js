@@ -28,31 +28,7 @@ app.get("/about", async (request, response) => {
 });
 
 app.get("/cars", async (request, response) => {
-	const query = request.query;
-	let result;
-
-	if (query.sort !== undefined && query.filter !== undefined) {
-		result = await db.findSorted("cars", JSON.parse(query.filter), JSON.parse(`{"${query.sort}":${query.order}}`));
-	} else if (query.sort !== undefined) {
-		result = await db.findSorted("cars", {}, JSON.parse(`{"${query.sort}":${query.order}}`));
-	} else if (query.filter !== undefined) {
-		result = await db.find("cars", JSON.parse(query.filter));
-	} else if (query.search !== undefined) {
-		const regExpQuery = new RegExp(query.search, "i");
-		const numberQuery = parseInt(query.search);
-
-		result = await db.find("cars", {
-			$or: [{ "make": regExpQuery }, { "model": regExpQuery }, { "newused": regExpQuery }, { "fuel": regExpQuery }, { "year": { $eq: numberQuery } }, { "price": { $eq: numberQuery } }]
-		});
-	} else {
-		result = await db.find("cars");
-	}
-
-	response.send(result);
-});
-
-app.get("/cars/makes", async (request, response) => {
-	const result = await db.findDistinct("cars", "make");
+	const result = await db.find("cars");
 
 	response.send(result);
 });
@@ -61,6 +37,11 @@ app.post("/cars", (request, response) => {
 	const form = new formidable.IncomingForm();
 
 	form.parse(request, async (err, fields, files) => {
+		for (const fieldKey in fields) {
+			fields[fieldKey] = fields[fieldKey].replace(/</g, "&lt;")
+				.replace(/>/g, "&gt;");
+		}
+
 		fields.image = files.image.newFilename + files.image.originalFilename;
 		fields.price = parseInt(fields.price.toString());
 		fields.year = parseInt(fields.year.toString());
@@ -82,6 +63,11 @@ app.post("/cars-put", (request, response) => {
 	const form = new formidable.IncomingForm();
 
 	form.parse(request, async (err, fields, files) => {
+		for (const fieldKey in fields) {
+			fields[fieldKey] = fields[fieldKey].replace(/</g, "&lt;")
+				.replace(/>/g, "&gt;");
+		}
+
 		const id = fields._id;
 		fields.price = parseInt(fields.price.toString());
 		fields.year = parseInt(fields.year.toString());

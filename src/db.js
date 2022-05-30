@@ -20,29 +20,10 @@ async function insert(collection, data) {
 	});
 }
 
-async function find(collection, query) {
+async function find(collection) {
 	const _collection = await db.collection(collection);
 
-	if (query === undefined) {
-		return await _collection.find()
-			.toArray();
-	} else {
-		return await _collection.find(query)
-			.toArray();
-	}
-}
-
-async function findDistinct(collection, field) {
-	const _collection = await db.collection(collection);
-
-	return await _collection.distinct(field);
-}
-
-async function findSorted(collection, query, sort) {
-	const _collection = await db.collection(collection);
-
-	return await _collection.find(query)
-		.sort(sort)
+	return await _collection.find()
 		.toArray();
 }
 
@@ -69,8 +50,6 @@ async function close() {
 module.exports = {
 	insert,
 	find,
-	findDistinct,
-	findSorted,
 	update,
 	remove,
 	close
