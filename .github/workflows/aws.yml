@@ -71,6 +71,7 @@ jobs:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: ${{ github.sha }}
       run: |
+        npm install
         npm start
 
     - name: Fill in the new image ID in the Amazon ECS task definition
