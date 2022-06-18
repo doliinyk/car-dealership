@@ -54,7 +54,7 @@ function updateCars() {
 			carsContainer.append(`
 			<div class="col-xl-3 col-lg-4 col-md-6 col-12 pb-3" data-id="${car._id}">
 				<div class="card">
-					<img src="img/cars/${car.image}" class="card-img-top"
+					<img src="${car.image}" class="card-img-top"
 				     alt="${carName}">
 				     <div class="card-body">
 					     <h5 class="card-title">${carName}</h5>

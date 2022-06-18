@@ -6,6 +6,16 @@ const db = require("./db");
 const formidable = require("formidable");
 const { ObjectId } = require("mongodb");
 const fs = require("fs");
+const aws = require("aws-sdk");
+
+const accessKeyId = "AKIAXTH6YXUFLP5XD3FO";
+const secretAccessKey = "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";
+const bucketName = "car-dealership-bucket";
+
+const s3 = new aws.S3({
+	accessKeyId,
+	secretAccessKey
+});
 
 app.get("/", async (request, response) => {
 	await response.render("index.html");
@@ -42,18 +52,21 @@ app.post("/cars", (request, response) => {
 				.replace(/>/g, "&gt;");
 		}
 
-		fields.image = files.image.newFilename + files.image.originalFilename;
+		const imagePath = files.image.filepath;
+		const blob = fs.readFileSync(imagePath);
+
+		const uploadedImage = await s3.upload({
+			Bucket: bucketName,
+			Key: files.image.newFilename + files.image.originalFilename,
+			Body: blob
+		})
+			.promise();
+
+		fields.image = uploadedImage.Location;
 		fields.price = parseInt(fields.price.toString());
 		fields.year = parseInt(fields.year.toString());
 
 		await db.insert("cars", fields);
-
-		const oldPath = files.image.filepath;
-		const newPath = `./public/img/cars/${fields.image}`;
-
-		fs.copyFile(oldPath, newPath, err => {
-			if (err) console.log(err);
-		});
 
 		response.redirect("sell.html");
 	});
@@ -73,17 +86,24 @@ app.post("/cars-put", (request, response) => {
 		fields.year = parseInt(fields.year.toString());
 
 		if (files.image.originalFilename) {
-			fields.image = files.image.newFilename + files.image.originalFilename;
+			const imagePath = files.image.filepath;
+			const oldImagePath = decodeURI(fields.oldimage);
+			const blob = fs.readFileSync(imagePath);
 
-			const oldPath = files.image.filepath;
-			const newPath = `./public/img/cars/${fields.image}`;
+			await s3.deleteObject({
+				Bucket: bucketName,
+				Key: oldImagePath.substring(oldImagePath.lastIndexOf("/") + 1)
+			})
+				.promise();
 
-			fs.rm(`./public/img/cars/${fields.oldimage}`, err => {
-				if (err) console.log(err);
-			});
-			fs.copyFile(oldPath, newPath, err => {
-				if (err) console.log(err);
-			});
+			const uploadedImage = await s3.upload({
+				Bucket: bucketName,
+				Key: files.image.newFilename + files.image.originalFilename,
+				Body: blob
+			})
+				.promise();
+
+			fields.image = uploadedImage.Location;
 		}
 
 		delete fields.oldimage;
@@ -98,11 +118,13 @@ app.post("/cars-put", (request, response) => {
 app.delete("/cars", async (request, response) => {
 	const query = request.query;
 
-	await db.remove("cars", ObjectId(query.id));
+	await s3.deleteObject({
+		Bucket: bucketName,
+		Key: query.image.substring(query.image.lastIndexOf("/") + 1)
+	})
+		.promise();
 
-	fs.rm(`./public/img/cars/${query.image}`, err => {
-		if (err) console.log(err);
-	});
+	await db.remove("cars", ObjectId(query.id));
 
 	response.send("Deleted");
 });
