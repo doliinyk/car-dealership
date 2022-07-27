@@ -63,7 +63,7 @@ function updateCars() {
 					editModalFuel.val(car.fuel);
 					editModalPrice.val(car.price);
 					editModalYear.val(car.year);
-					editModalImageImg.attr("src", `img/cars/${car.image}`)
+					editModalImageImg.attr("src", car.image)
 						.val(car.image);
 					editModalId.val(car._id);
 					editModalOldImage.val(car.image);
