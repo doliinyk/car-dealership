@@ -15,9 +15,7 @@ const db = client.db("db");
 async function insert(collection, data) {
 	const _collection = db.collection(collection);
 
-	await _collection.insertOne(data, err => {
-		if (err) console.log(err);
-	});
+	await _collection.insertOne(data);
 }
 
 async function find(collection) {
@@ -30,17 +28,13 @@ async function find(collection) {
 async function update(collection, _id, data) {
 	const _collection = await db.collection(collection);
 
-	await _collection.updateOne({ _id }, { $set: data }, err => {
-		if (err) console.log(err);
-	});
+	await _collection.updateOne({ _id }, { $set: data });
 }
 
 async function remove(collection, _id) {
 	const _collection = await db.collection(collection);
 
-	await _collection.deleteOne({ _id }, err => {
-		if (err) console.log(err);
-	});
+	await _collection.deleteOne({ _id });
 }
 
 async function close() {
